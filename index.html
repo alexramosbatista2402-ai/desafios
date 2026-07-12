@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Objetivos</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #06090c;
+            --card-bg: #0d1318;
+            --text-primary: #ffffff;
+            --text-secondary: #717e89;
+            --green: #27ae60;
+            --blue: #2980b9;
+            --purple: #8e44ad;
+            --red: #e74c3c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 410px;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 100px;
+            box-sizing: border-box;
+        }
+
+        header {
+            padding: 24px 20px 15px 20px;
+            text-align: center;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            color: var(--green);
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .header-date-block {
+            text-align: left;
+        }
+
+        .header-date-block .current-date {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-date-block .current-time {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 2px 0 0 0;
+        }
+
+        .historical-warning {
+            background-color: #f39c12;
+            color: black;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 0 16px 10px 16px;
+            display: none;
+            cursor: pointer;
+        }
+
+        .header-top .material-icons {
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .logo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .logo-area .target-icon {
+            color: var(--green);
+            font-size: 36px;
+        }
+
+        header h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        header p { margin: 4px 0 0 0; color: var(--text-secondary); font-size: 13px; }
+
+        .challenge-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            margin: 0 16px 16px 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title-block {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .badge-icon {
+            padding: 10px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .daily .badge-icon { background-color: var(--green); }
+        .biweekly .badge-icon { background-color: var(--blue); }
+        .monthly .badge-icon { background-color: var(--purple); }
+
+        .title-text h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+        .daily .title-text h2 { color: var(--green); }
+        .biweekly .title-text h2 { color: var(--blue); }
+        .monthly .title-text h2 { color: var(--purple); }
+        .title-text p { margin: 3px 0 0 0; font-size: 12px; color: var(--text-secondary); line-height: 1.3; }
+
+        .progress-container { display: flex; align-items: center; gap: 12px; }
+        .progress-text-block { text-align: right; font-size: 13px; font-weight: 600; color: #ffffff; line-height: 1.2; }
+        .progress-text-block small { display: block; color: var(--text-secondary); font-size: 11px; font-weight: 400; }
+
+        .progress-ring { position: relative; width: 36px; height: 36px; }
+        .progress-ring circle { fill: none; stroke-width: 3.5; }
+        .progress-ring .bg { stroke: #172026; }
+        .progress-ring .bar { stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.3s ease; }
+        .daily .progress-ring .bar { stroke: var(--green); }
+        .biweekly .progress-ring .bar { stroke: var(--blue); }
+        .monthly .progress-ring .bar { stroke: var(--purple); }
+
+        .task-list { display: flex; flex-direction: column; }
+        
+        /* CORREÇÃO ROBUSTA DE LAYOUT */
+        .task-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 14px 0; 
+            border-bottom: 1px solid #161f26; 
+            gap: 16px;
+        }
+        .task-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .task-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            font-size: 14px; 
+            flex: 1; 
+            cursor: pointer; 
+            min-width: 0;
+        }
+        
+        .task-icon { 
+            font-size: 20px; 
+            flex-shrink: 0; 
+            width: 24px; 
+            text-align: center;
+        }
+        .daily .task-icon { color: var(--green); }
+        .biweekly .task-icon { color: var(--blue); }
+        .monthly .task-icon { color: var(--purple); }
+        
+        .task-text {
+            white-space: normal;
+            word-break: break-word;
+            flex: 1;
+        }
+        .task-text.done { color: var(--text-secondary); text-decoration: line-through; }
+
+        .task-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            flex-shrink: 0;
+        }
+        
+        .action-btn { background: none; border: none; color: #3a444d; cursor: pointer; padding: 0; display: flex; }
+        .action-btn:hover { color: white; }
+
+        .status-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-sizing: border-box; flex-shrink: 0; }
+        .status-circle.unchecked { border: 1.5px solid #3a4855; }
+        .status-circle.checked .material-icons { font-size: 15px; color: white; font-weight: bold; }
+        .daily .status-circle.checked { background-color: var(--green); }
+        .biweekly .status-circle.checked { background-color: var(--blue); }
+        .monthly .status-circle.checked { background-color: var(--purple); }
+
+        /* Estilo Unificado para os Modais Modernos */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background-color: var(--card-bg); padding: 24px; border-radius: 20px; width: 85%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #1c2630; box-sizing: border-box; }
+        .modal-content h3 { margin-top: 0; margin-bottom: 12px; font-size: 18px; font-weight: 700; color: white; }
+        .modal-content p { color: var(--text-secondary); font-size: 14px; margin-top: 0; margin-bottom: 24px; line-height: 1.5; }
+        .modal-content label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 0 0 20px 0; background: #141c22; border: 1px solid #232f3a; color: white; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+        
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 12px; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; text-align: center; }
+        .calendar-day { padding: 8px 0; font-size: 13px; border-radius: 8px; color: var(--text-secondary); cursor: pointer; transition: background 0.2s; }
+        .calendar-day:hover { background-color: #172026; color: white; }
+        .calendar-day.active { background-color: var(--green); color: white; font-weight: bold; }
+        .calendar-day.selected { border: 2px solid var(--blue); color: white; }
+
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; transition: opacity 0.2s; }
+        .btn:active { opacity: 0.8; }
+        .btn-primary { background-color: var(--green); color: white; }
+        .btn-danger { background-color: var(--red); color: white; }
+        .btn-cancel { background-color: #232f3a; color: white; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 410px; background-color: #000000; border-top: 1px solid #0d1318; display: flex; justify-content: center; align-items: center; padding: 20px 0; z-index: 100; }
+        .fab-button { background-color: var(--green); color: white; width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(39, 174, 96, 0.4); }
+        .fab-button.disabled { background-color: #232f3a; color: var(--text-secondary); cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <div class="header-top">
+                <span class="material-icons">menu</span>
+                <div class="header-date-block">
+                    <p class="current-date" id="topDate">Carregando data...</p>
+                    <p class="current-time" id="topTime">--:--</p>
+                </div>
+                <span class="material-icons" onclick="openCalendar()">calendar_month</span>
+            </div>
+            
+            <div class="historical-warning" id="historyWarning" onclick="backToToday()">
+                Visualizando dia anterior. Clique aqui para voltar a hoje.
+            </div>
+
+            <div class="logo-area">
+                <span class="material-icons target-icon">track_changes</span>
+                <h1>Meu Objetivos</h1>
+                <p>Pequenas ações, grandes conquistas!</p>
+            </div>
+        </header>
+
+        <section class="challenge-section daily">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <div class="badge-icon"><span class="material-icons">event_available</span></div>
+                    <div class="title-text">
+                        <h2>Desafio Todo Dia</h2>
+                        <p>Pequenas atitudes diárias que transformam sua rotina.</p>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-text-block" id="text-daily">0/0<small>concluídos</small></div>
+                    <div class="progress-ring">
+                        <svg width="36" height="36">
+                            <circle class="bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="bar" id="ring-daily" cx="18" cy="18" r="16"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="task-list" id="list-daily"></div>
+        </section>
+
+        <section class="challenge-section biweekly">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <div class="badge-icon"><span class="material-icons">calendar_view_month</span></div>
+                    <div class="title-text">
+                        <h2>Desafio Cada 15 Dias</h2>
+                        <p id="label-biweekly">Carregando período...</p>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-text-block" id="text-biweekly">0/0<small>concluídos</small></div>
+                    <div class="progress-ring">
+                        <svg width="36" height="36">
+                            <circle class="bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="bar" id="ring-biweekly" cx="18" cy="18" r="16"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="task-list" id="list-biweekly"></div>
+        </section>
+
+        <section class="challenge-section monthly">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <div class="badge-icon"><span class="material-icons">auto_awesome</span></div>
+                    <div class="title-text">
+                        <h2>Desafio 1 Vez ao Mês</h2>
+                        <p>Experiências que trazem novas memórias e aprendizados.</p>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-text-block" id="text-monthly">0/0<small>concluídos</small></div>
+                    <div class="progress-ring">
+                        <svg width="36" height="36">
+                            <circle class="bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="bar" id="ring-monthly" cx="18" cy="18" r="16"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="task-list" id="list-monthly"></div>
+        </section>
+
+        <nav class="bottom-nav">
+            <div class="fab-button" id="fabBtn" onclick="openModal()"><span class="material-icons">add</span></div>
+        </nav>
+    </div>
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Novo Desafio</h3>
+            <input type="hidden" id="taskId">
+            <label>Nome do Desafio</label>
+            <input type="text" id="taskName" placeholder="Ex: Treinar 1 hora">
+            <label>Tipo de Frequência</label>
+            <select id="taskCategory">
+                <option value="daily">Todo Dia</option>
+                <option value="biweekly">Cada 15 Dias</option>
+                <option value="monthly">1 Vez ao Mês</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveTask()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content">
+            <h3>Excluir desafio?</h3>
+            <p>Tem certeza de que deseja apagar permanentemente este desafio da sua lista?</p>
+            <input type="hidden" id="deleteTaskId">
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmDeleteTask()">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="calendarModal">
+        <div class="modal-content">
+            <h3>Calendário do Mês</h3>
+            <div class="calendar-grid" id="calendarDays"></div>
+            <div class="modal-buttons" style="margin-top:20px;">
+                <button class="btn btn-cancel" onclick="closeCalendar()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultTasks = [
+            { id: '1', name: 'Treinar pelo menos uma hora por dia', category: 'daily', icon: 'fitness_center' },
+            { id: '2', name: 'Comer uma fruta', category: 'daily', icon: 'local_dining' },
+            { id: '3', name: 'Beber 2 litros de água', category: 'daily', icon: 'water_drop' },
+            { id: '4', name: 'Tomar creatina', category: 'daily', icon: 'opacity' },
+            { id: '5', name: 'Não comer doce e refri', category: 'daily', icon: 'cake' },
+            { id: '6', name: 'Lavar tênis', category: 'biweekly', icon: 'directions_run' },
+            { id: '7', name: 'Sair para correr', category: 'biweekly', icon: 'directions_run' },
+            { id: '8', name: 'Assistir um filme novo', category: 'biweekly', icon: 'movie' },
+            { id: '9', name: 'Ir ao cinema', category: 'monthly', icon: 'theaters' }
+        ];
+
+        let globalTasks = JSON.parse(localStorage.getItem('my_challenges_structures')) || defaultTasks;
+        let completionHistory = JSON.parse(localStorage.getItem('my_challenges_history')) || {};
+
+        let todayDateObj = new Date();
+        let selectedDateObj = new Date(); 
+
+        function getFormattedKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function isViewingToday() {
+            return todayDateObj.toDateString() === selectedDateObj.toDateString();
+        }
+
+        function updateHeaderDates() {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('topDate').innerText = selectedDateObj.toLocaleDateString('pt-BR', options);
+            document.getElementById('topTime').innerText = todayDateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            const warning = document.getElementById('historyWarning');
+            const fab = document.getElementById('fabBtn');
+            
+            if (isViewingToday()) {
+                warning.style.display = 'none';
+                fab.className = "fab-button";
+                fab.setAttribute("onclick", "openModal()");
+            } else {
+                warning.style.display = 'block';
+                fab.className = "fab-button disabled";
+                fab.setAttribute("onclick", "");
+            }
+
+            const dayOfMonth = selectedDateObj.getDate();
+            const labelBiweekly = document.getElementById('label-biweekly');
+            if (dayOfMonth <= 15) {
+                labelBiweekly.innerText = "Hábitos do dia 1 ao dia 15 do mês.";
+            } else {
+                labelBiweekly.innerText = "Hábitos do dia 16 ao fim do mês.";
+            }
+        }
+
+        function getAutomaticIcon(text) {
+            const t = text.toLowerCase();
+            if (t.includes('trein') || t.includes('academia') || t.includes('peso')) return 'fitness_center';
+            if (t.includes('água') || t.includes('agua') || t.includes('beber')) return 'water_drop';
+            if (t.includes('creatina') || t.includes('tomar')) return 'opacity';
+            if (t.includes('fruta') || t.includes('comer')) return 'local_dining'; // Ícone estável corrigido aqui
+            if (t.includes('doce') || t.includes('refri')) return 'cake';
+            if (t.includes('corr') || t.includes('tenis') || t.includes('lavar')) return 'directions_run';
+            if (t.includes('cinema') || t.includes('filme')) return 'theaters';
+            return 'star';
+        }
+
+        function updateRing(cat, current, total) {
+            const ring = document.getElementById(`ring-${cat}`);
+            if (!ring) return;
+            const radius = 16;
+            const circumference = 2 * Math.PI * radius;
+            ring.style.strokeDasharray = `${circumference} ${circumference}`;
+            if (total === 0) { ring.style.strokeDashoffset = circumference; return; }
+            const offset = circumference - ((current / total) * circumference);
+            ring.style.strokeDashoffset = offset;
+        }
+
+        function renderApp() {
+            updateHeaderDates();
+            const categories = ['daily', 'biweekly', 'monthly'];
+            const dayKey = getFormattedKey(selectedDateObj);
+            
+            const dayOfMonth = selectedDateObj.getDate();
+            const periodSuffix = dayOfMonth <= 15 ? 'Q1' : 'Q2';
+            const biweeklyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}-${periodSuffix}`;
+            const monthlyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}`;
+
+            const doneDayList = completionHistory[dayKey] || [];
+            const doneBiweeklyList = completionHistory[biweeklyKey] || [];
+            const doneMonthlyList = completionHistory[monthlyKey] || [];
+
+            categories.forEach(cat => {
+                const listElement = document.getElementById(`list-${cat}`);
+                const textElement = document.getElementById(`text-${cat}`);
+                const filtered = globalTasks.filter(t => t.category === cat);
+                
+                let doneCount = 0;
+                filtered.forEach(t => {
+                    if (cat === 'daily' && doneDayList.includes(t.id)) doneCount++;
+                    if (cat === 'biweekly' && doneBiweeklyList.includes(t.id)) doneCount++;
+                    if (cat === 'monthly' && doneMonthlyList.includes(t.id)) doneCount++;
+                });
+                
+                textElement.innerHTML = `${doneCount}/${filtered.length}<small>${cat === 'daily' ? 'concluídos hoje' : 'concluídos'}</small>`;
+                updateRing(cat, doneCount, filtered.length);
+                
+                listElement.innerHTML = '';
+                filtered.forEach(task => {
+                    let isDone = false;
+                    if (cat === 'daily' && doneDayList.includes(task.id)) isDone = true;
+                    if (cat === 'biweekly' && doneBiweeklyList.includes(task.id)) isDone = true;
+                    if (cat === 'monthly' && doneMonthlyList.includes(task.id)) isDone = true;
+
+                    const item = document.createElement('div');
+                    item.className = 'task-item';
+                    item.innerHTML = `
+                        <div class="task-left" onclick="toggleTask('${task.id}', '${cat}')">
+                            <span class="material-icons task-icon">${task.icon}</span>
+                            <span class="task-text ${isDone ? 'done' : ''}">${task.name}</span>
+                        </div>
+                        <div class="task-actions">
+                            ${isViewingToday() ? `
+                                <button class="action-btn" onclick="editTask('${task.id}')"><span class="material-icons" style="font-size:16px">edit</span></button>
+                                <button class="action-btn" onclick="openDeleteModal('${task.id}')"><span class="material-icons" style="font-size:16px; color:#c0392b">delete</span></button>
+                            ` : ''}
+                            <div class="status-circle ${isDone ? 'checked' : 'unchecked'}" onclick="toggleTask('${task.id}', '${cat}')">
+                                ${isDone ? '<span class="material-icons">done</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                    listElement.appendChild(item);
+                });
+            });
+
+            localStorage.setItem('my_challenges_structures', JSON.stringify(globalTasks));
+            localStorage.setItem('my_challenges_history', JSON.stringify(completionHistory));
+        }
+
+        function toggleTask(id, cat) {
+            const dayKey = getFormattedKey(selectedDateObj);
+            const dayOfMonth = selectedDateObj.getDate();
+            const periodSuffix = dayOfMonth <= 15 ? 'Q1' : 'Q2';
+            const biweeklyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}-${periodSuffix}`;
+            const monthlyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}`;
+
+            let targetKey = dayKey;
+            if (cat === 'biweekly') targetKey = biweeklyKey;
+            if (cat === 'monthly') targetKey = monthlyKey;
+
+            if (!completionHistory[targetKey]) {
+                completionHistory[targetKey] = [];
+            }
+
+            if (completionHistory[targetKey].includes(id)) {
+                completionHistory[targetKey] = completionHistory[targetKey].filter(taskId => taskId !== id);
+            } else {
+                completionHistory[targetKey].push(id);
+            }
+
+            renderApp();
+        }
+
+        function openModal() {
+            document.getElementById('modalTitle').innerText = "Novo Desafio";
+            document.getElementById('taskId').value = "";
+            document.getElementById('taskName').value = "";
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+
+        function saveTask() {
+            const id = document.getElementById('taskId').value;
+            const name = document.getElementById('taskName').value.trim();
+            const category = document.getElementById('taskCategory').value;
+
+            if (!name) return;
+            const icon = getAutomaticIcon(name);
+
+            if (id) {
+                globalTasks = globalTasks.map(t => t.id === id ? { ...t, name, category, icon } : t);
+            } else {
+                globalTasks.push({ id: Date.now().toString(), name, category, icon });
+            }
+            closeModal();
+            renderApp();
+        }
+
+        function editTask(id) {
+            const task = globalTasks.find(t => t.id === id);
+            if (!task) return;
+            document.getElementById('modalTitle').innerText = "Editar Desafio";
+            document.getElementById('taskId').value = task.id;
+            document.getElementById('taskName').value = task.name;
+            document.getElementById('taskCategory').value = task.category;
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById('deleteTaskId').value = id;
+            document.getElementById('deleteConfirmModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+        }
+
+        function confirmDeleteTask() {
+            const id = document.getElementById('deleteTaskId').value;
+            globalTasks = globalTasks.filter(t => t.id !== id);
+            closeDeleteModal();
+            renderApp();
+        }
+
+        function openCalendar() {
+            const container = document.getElementById('calendarDays');
+            container.innerHTML = '';
+            const currentRealDay = todayDateObj.getDate();
+            const selectedDay = selectedDateObj.getDate();
+
+            for (let i = 1; i <= 31; i++) {
+                const dayEl = document.createElement('div');
+                let className = 'calendar-day';
+                if (i === currentRealDay) className += ' active';
+                if (i === selectedDay && !isViewingToday()) className += ' selected';
+                
+                dayEl.className = className;
+                dayEl.innerText = i;
+                dayEl.setAttribute('onclick', `selectCalendarDay(${i})`);
+                container.appendChild(dayEl);
+            }
+            document.getElementById('calendarModal').style.display = 'flex';
+        }
+
+        function closeCalendar() { document.getElementById('calendarModal').style.display = 'none'; }
+
+        function selectCalendarDay(day) {
+            selectedDateObj.setDate(day);
+            closeCalendar();
+            renderApp();
+        }
+
+        function backToToday() {
+            selectedDateObj = new Date(todayDateObj.getTime());
+            renderApp();
+        }
+
+        window.onclick = function(e) {
+            if (e.target.className === 'modal') {
+                closeModal();
+                closeCalendar();
+                closeDeleteModal();
+            }
+        };
+
+        setInterval(() => {
+            todayDateObj = new Date();
+            if(isViewingToday()){
+                selectedDateObj = new Date(todayDateObj.getTime());
+            }
+            renderApp();
+        }, 1000);
+
+        renderApp();
+    </script>
+</body>
+</html>
