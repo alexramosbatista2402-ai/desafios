@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Objetivos</title>
     
-    <!-- Configurações PWA para ocultar a URL -->
+    <!-- Configurações PWA obrigatórias para ocultar a URL -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#27ae60">
+    <meta name="theme-color" content="#06090c">
     
     <link rel="icon" type="image/png" href="icone.png" sizes="192x192">
     <link rel="apple-touch-icon" href="icone.png">
@@ -385,6 +385,11 @@
     </div>
 
     <script>
+        // Registro do Service Worker automático
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
         const defaultTasks = [
             { id: '1', name: 'Treinar pelo menos uma hora por dia', category: 'daily', icon: 'fitness_center' },
             { id: '2', name: 'Comer uma fruta', category: 'daily', icon: 'local_dining' },
