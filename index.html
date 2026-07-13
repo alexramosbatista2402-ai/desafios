@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Objetivos</title>
     
+    <!-- Configurações PWA para ocultar a URL -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#27ae60">
+    
     <link rel="icon" type="image/png" href="icone.png" sizes="192x192">
     <link rel="apple-touch-icon" href="icone.png">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Meu Objetivos">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -162,7 +168,6 @@
 
         .task-list { display: flex; flex-direction: column; }
         
-        /* CORREÇÃO ROBUSTA DE LAYOUT */
         .task-item { 
             display: flex; 
             align-items: center; 
