@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Objetivos</title>
     
-    <!-- Configurações PWA obrigatórias para ocultar a URL -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#06090c">
     
@@ -253,7 +252,6 @@
     <div class="app-container">
         <header>
             <div class="header-top">
-                <span class="material-icons">menu</span>
                 <div class="header-date-block">
                     <p class="current-date" id="topDate">Carregando data...</p>
                     <p class="current-time" id="topTime">--:--</p>
@@ -480,7 +478,7 @@
             const monthlyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}`;
 
             const doneDayList = completionHistory[dayKey] || [];
-            const doneBiweeklyList = completionHistory[biweeklyKey] || [];
+            const doneBiweeklyList = completionHistory[doneBiweeklyKey] || [];
             const doneMonthlyList = completionHistory[monthlyKey] || [];
 
             categories.forEach(cat => {
