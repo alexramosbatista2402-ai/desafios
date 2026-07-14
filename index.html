@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Objetivos</title>
+    <title>Meus Objetivos</title>
     
-    <!-- Configurações PWA obrigatórias para ocultar a URL -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#06090c">
     
@@ -14,7 +13,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Meu Objetivos">
+    <meta name="apple-mobile-web-app-title" content="Meus Objetivos">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
@@ -24,6 +23,7 @@
             --text-primary: #ffffff;
             --text-secondary: #717e89;
             --green: #27ae60;
+            --orange: #e67e22; /* Nova cor para o desafio semanal */
             --blue: #2980b9;
             --purple: #8e44ad;
             --red: #e74c3c;
@@ -145,11 +145,13 @@
         }
 
         .daily .badge-icon { background-color: var(--green); }
+        .weekly .badge-icon { background-color: var(--orange); }
         .biweekly .badge-icon { background-color: var(--blue); }
         .monthly .badge-icon { background-color: var(--purple); }
 
         .title-text h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
         .daily .title-text h2 { color: var(--green); }
+        .weekly .title-text h2 { color: var(--orange); }
         .biweekly .title-text h2 { color: var(--blue); }
         .monthly .title-text h2 { color: var(--purple); }
         .title-text p { margin: 3px 0 0 0; font-size: 12px; color: var(--text-secondary); line-height: 1.3; }
@@ -163,6 +165,7 @@
         .progress-ring .bg { stroke: #172026; }
         .progress-ring .bar { stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.3s ease; }
         .daily .progress-ring .bar { stroke: var(--green); }
+        .weekly .progress-ring .bar { stroke: var(--orange); }
         .biweekly .progress-ring .bar { stroke: var(--blue); }
         .monthly .progress-ring .bar { stroke: var(--purple); }
 
@@ -195,6 +198,7 @@
             text-align: center;
         }
         .daily .task-icon { color: var(--green); }
+        .weekly .task-icon { color: var(--orange); }
         .biweekly .task-icon { color: var(--blue); }
         .monthly .task-icon { color: var(--purple); }
         
@@ -219,6 +223,7 @@
         .status-circle.unchecked { border: 1.5px solid #3a4855; }
         .status-circle.checked .material-icons { font-size: 15px; color: white; font-weight: bold; }
         .daily .status-circle.checked { background-color: var(--green); }
+        .weekly .status-circle.checked { background-color: var(--orange); }
         .biweekly .status-circle.checked { background-color: var(--blue); }
         .monthly .status-circle.checked { background-color: var(--purple); }
 
@@ -267,7 +272,7 @@
 
             <div class="logo-area">
                 <span class="material-icons target-icon">track_changes</span>
-                <h1>Meu Objetivos</h1>
+                <h1>Meus Objetivos</h1>
                 <p>Pequenas ações, grandes conquistas!</p>
             </div>
         </header>
@@ -292,6 +297,28 @@
                 </div>
             </div>
             <div class="task-list" id="list-daily"></div>
+        </section>
+
+        <section class="challenge-section weekly">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <div class="badge-icon"><span class="material-icons">view_week</span></div>
+                    <div class="title-text">
+                        <h2>Desafio de 7 Dias</h2>
+                        <p id="label-weekly">Carregando período da semana...</p>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-text-block" id="text-weekly">0/0<small>concluídos</small></div>
+                    <div class="progress-ring">
+                        <svg width="36" height="36">
+                            <circle class="bg" cx="18" cy="18" r="16"></circle>
+                            <circle class="bar" id="ring-weekly" cx="18" cy="18" r="16"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="task-list" id="list-weekly"></div>
         </section>
 
         <section class="challenge-section biweekly">
@@ -348,10 +375,11 @@
             <h3 id="modalTitle">Novo Desafio</h3>
             <input type="hidden" id="taskId">
             <label>Nome do Desafio</label>
-            <input type="text" id="taskName" placeholder="Ex: Treinar 1 hora">
+            <input type="text" id="taskName" placeholder="Ex: Organizar o guarda-roupa">
             <label>Tipo de Frequência</label>
             <select id="taskCategory">
                 <option value="daily">Todo Dia</option>
+                <option value="weekly">Toda Semana (7 em 7 dias)</option>
                 <option value="biweekly">Cada 15 Dias</option>
                 <option value="monthly">1 Vez ao Mês</option>
             </select>
@@ -390,12 +418,14 @@
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
+        // Lista base padrão (com adição de exemplos semanais)
         const defaultTasks = [
             { id: '1', name: 'Treinar pelo menos uma hora por dia', category: 'daily', icon: 'fitness_center' },
             { id: '2', name: 'Comer uma fruta', category: 'daily', icon: 'local_dining' },
             { id: '3', name: 'Beber 2 litros de água', category: 'daily', icon: 'water_drop' },
             { id: '4', name: 'Tomar creatina', category: 'daily', icon: 'opacity' },
             { id: '5', name: 'Não comer doce e refri', category: 'daily', icon: 'cake' },
+            { id: 'w1', name: 'Estudar conteúdo da semana', category: 'weekly', icon: 'auto_stories' },
             { id: '6', name: 'Lavar tênis', category: 'biweekly', icon: 'directions_run' },
             { id: '7', name: 'Sair para correr', category: 'biweekly', icon: 'directions_run' },
             { id: '8', name: 'Assistir um filme novo', category: 'biweekly', icon: 'movie' },
@@ -438,6 +468,20 @@
             }
 
             const dayOfMonth = selectedDateObj.getDate();
+            
+            // Lógica de legenda para o Desafio Semanal (7 em 7 dias)
+            const labelWeekly = document.getElementById('label-weekly');
+            if (dayOfMonth <= 7) {
+                labelWeekly.innerText = "Semana 1: Dias 1 ao 7 do mês.";
+            } else if (dayOfMonth <= 14) {
+                labelWeekly.innerText = "Semana 2: Dias 8 ao 14 do mês.";
+            } else if (dayOfMonth <= 21) {
+                labelWeekly.innerText = "Semana 3: Dias 15 ao 21 do mês.";
+            } else {
+                labelWeekly.innerText = "Semana 4: Dias 22 ao fim do mês.";
+            }
+
+            // Lógica de legenda do Desafio Quinzenal
             const labelBiweekly = document.getElementById('label-biweekly');
             if (dayOfMonth <= 15) {
                 labelBiweekly.innerText = "Hábitos do dia 1 ao dia 15 do mês.";
@@ -455,6 +499,7 @@
             if (t.includes('doce') || t.includes('refri')) return 'cake';
             if (t.includes('corr') || t.includes('tenis') || t.includes('lavar')) return 'directions_run';
             if (t.includes('cinema') || t.includes('filme')) return 'theaters';
+            if (t.includes('estud') || t.includes('livro') || t.includes('ler')) return 'auto_stories';
             return 'star';
         }
 
@@ -471,15 +516,29 @@
 
         function renderApp() {
             updateHeaderDates();
-            const categories = ['daily', 'biweekly', 'monthly'];
+            const categories = ['daily', 'weekly', 'biweekly', 'monthly'];
             const dayKey = getFormattedKey(selectedDateObj);
             
             const dayOfMonth = selectedDateObj.getDate();
+            const currentYear = selectedDateObj.getFullYear();
+            const currentMonth = selectedDateObj.getMonth() + 1;
+
+            // Chave de segmentação para a nova Regra Semanal
+            let weekSuffix = 'W4';
+            if (dayOfMonth <= 7) weekSuffix = 'W1';
+            else if (dayOfMonth <= 14) weekSuffix = 'W2';
+            else if (dayOfMonth <= 21) weekSuffix = 'W3';
+            const weeklyKey = `${currentYear}-${currentMonth}-${weekSuffix}`;
+
+            // Chave da Quinzena
             const periodSuffix = dayOfMonth <= 15 ? 'Q1' : 'Q2';
-            const biweeklyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}-${periodSuffix}`;
-            const monthlyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}`;
+            const biweeklyKey = `${currentYear}-${currentMonth}-${periodSuffix}`;
+            
+            // Chave do Mês
+            const monthlyKey = `${currentYear}-${currentMonth}`;
 
             const doneDayList = completionHistory[dayKey] || [];
+            const doneWeeklyList = completionHistory[weeklyKey] || [];
             const doneBiweeklyList = completionHistory[biweeklyKey] || [];
             const doneMonthlyList = completionHistory[monthlyKey] || [];
 
@@ -491,6 +550,7 @@
                 let doneCount = 0;
                 filtered.forEach(t => {
                     if (cat === 'daily' && doneDayList.includes(t.id)) doneCount++;
+                    if (cat === 'weekly' && doneWeeklyList.includes(t.id)) doneCount++;
                     if (cat === 'biweekly' && doneBiweeklyList.includes(t.id)) doneCount++;
                     if (cat === 'monthly' && doneMonthlyList.includes(t.id)) doneCount++;
                 });
@@ -502,6 +562,7 @@
                 filtered.forEach(task => {
                     let isDone = false;
                     if (cat === 'daily' && doneDayList.includes(task.id)) isDone = true;
+                    if (cat === 'weekly' && doneWeeklyList.includes(task.id)) isDone = true;
                     if (cat === 'biweekly' && doneBiweeklyList.includes(task.id)) isDone = true;
                     if (cat === 'monthly' && doneMonthlyList.includes(task.id)) isDone = true;
 
@@ -533,11 +594,21 @@
         function toggleTask(id, cat) {
             const dayKey = getFormattedKey(selectedDateObj);
             const dayOfMonth = selectedDateObj.getDate();
+            const currentYear = selectedDateObj.getFullYear();
+            const currentMonth = selectedDateObj.getMonth() + 1;
+
+            let weekSuffix = 'W4';
+            if (dayOfMonth <= 7) weekSuffix = 'W1';
+            else if (dayOfMonth <= 14) weekSuffix = 'W2';
+            else if (dayOfMonth <= 21) weekSuffix = 'W3';
+            const weeklyKey = `${currentYear}-${currentMonth}-${weekSuffix}`;
+
             const periodSuffix = dayOfMonth <= 15 ? 'Q1' : 'Q2';
-            const biweeklyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}-${periodSuffix}`;
-            const monthlyKey = `${selectedDateObj.getFullYear()}-${selectedDateObj.getMonth() + 1}`;
+            const biweeklyKey = `${currentYear}-${currentMonth}-${periodSuffix}`;
+            const monthlyKey = `${currentYear}-${currentMonth}`;
 
             let targetKey = dayKey;
+            if (cat === 'weekly') targetKey = weeklyKey;
             if (cat === 'biweekly') targetKey = biweeklyKey;
             if (cat === 'monthly') targetKey = monthlyKey;
 
